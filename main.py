@@ -84,7 +84,7 @@ dict = {
 #********************#
 dataSet = np.loadtxt('selfie_dataset.txt', dtype=object)
 
-imgDataSet = np.load('selfie_dataset_128x128.npy')
+imgDataSet = np.load('selfie_dataset_64x64.npy')
 print "time to load data set:", time.time() - tick, "s"
 tick = time.time()
 
@@ -288,4 +288,4 @@ for i in xrange(3):
         plt.title("Ground Truth: %s, \n Prediction %s" %
                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
 plt.show()
- 
+
