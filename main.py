@@ -83,7 +83,7 @@ dict = {
 #********************#
 dataSet = np.loadtxt('selfie_dataset.txt', dtype=object)
 
-imgDataSet = np.load('selfie_dataset_32x32.npy')
+imgDataSet = np.load('selfie_dataset_64x64.npy')
 print "time to load data set:", time.time() - tick, "s"
 tick = time.time()
 
