@@ -97,13 +97,16 @@ tick = time.time()
 
 # uncomment code below to set color channel to 1 #
 #************************************************#
+# print("Type of dataset is {}".format(imgDataSet.dtype))
 imgDataSet = color.rgb2grey(imgDataSet)
+# print("Type of dataset is {}".format(imgDataSet.dtype))
 imgDataSet = np.expand_dims(imgDataSet, axis=3)
 print "time to set color channel to 1:", time.time() - tick, "s"
 tick = time.time()
 
-imgDataSet = imgDataSet.astype('float32')/255.
+# imgDataSet = imgDataSet.astype('float32')/255.
 
+# print("Max and min values in the dataset are {} and {}".format(np.max(imgDataSet), np.min(imgDataSet)))
 
 #*******************************************#
 #   splits data set in train and test set   #
@@ -270,3 +273,4 @@ for i in xrange(3):
         plt.title("Ground Truth: %s, \n Prediction %s" %
                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
 plt.show()
+
