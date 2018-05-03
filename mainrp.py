@@ -58,10 +58,11 @@
   ###############################################################
 import numpy as np
 import cv2
-from keras.models import load_model      #
-import model.h5
+from keras.models import load_model
 import time
 import cv2
+
+model = load_model('model.h5')
 
 # open the camera
 cap = cv2.VideoCapture(0)
@@ -69,13 +70,13 @@ cap = cv2.VideoCapture(0)
 while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
-    selfiePoints = model.h5.predict(frame)
+    selfiePoints = model.predict(frame)
     if selfiePoints > average:             #if selfie better than averagePopularityScore
         cv2.imshow('goodSelfie', image)              #show picture on Monitor
         cv2.imwrite('/goodSelfies/goodSelfie.png', image)       #safe picture in goodSelfies folder
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-      else:                                 #if worse than averagePopularityScore
+    else:                                 #if worse than averagePopularityScore
           cv2.imshow('badSelfie', image)    #show picture on Monitor
           cv2.imwrite('/badSelfies/badSelfie.png', image) #safe picture in badSelfies folder
           if cv2.waitKey(1) & 0xFF == ord('q'):
