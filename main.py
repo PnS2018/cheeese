@@ -1,5 +1,5 @@
 ####################################################################################################
-#                                            Cheese.py                                             #
+#                                             main.py                                              #
 ####################################################################################################
 #                                                                                                  #
 # Authors: Julian Merkofer, Julian Moosmann, Selim Naji                                            #
@@ -15,6 +15,7 @@
 from keras.layers import Input, Dense, Conv2D, Flatten, MaxPool2D, Dropout
 from keras.models import Model
 from keras.utils import to_categorical
+from keras.callbacks import ModelCheckpoint
 from keras import optimizers
 
 #import cv2
@@ -149,24 +150,24 @@ maleAverage /= maleLength
 #***********************************************************#
 for i in range(dataSet.shape[0]):
     
-    if int(dataSet[i, dict['female']]) == 1:
-        if float(dataSet[i, dict['popularityScore']]) >= femaleAverage:
-            dataSet[i, dict['popularityScore']] = 1
-        else:
-            dataSet[i, dict['popularityScore']] = 0
+    #if int(dataSet[i, dict['female']]) == 1:
+    #if float(dataSet[i, dict['popularityScore']]) >= femaleAverage:
+    #dataSet[i, dict['popularityScore']] = 1
+    #else:
+    #dataSet[i, dict['popularityScore']] = 0
+    
+    #else:
+    #if float(dataSet[i, dict['popularityScore']]) >= maleAverage:
+    #dataSet[i, dict['popularityScore']] = 1
+    #else:
+    #dataSet[i, dict['popularityScore']] = 0
+    
+    # ignoring categorization
+    if float(dataSet[i, dict['popularityScore']]) >= average:
+        dataSet[i, dict['popularityScore']] = 1
     
     else:
-        if float(dataSet[i, dict['popularityScore']]) >= maleAverage:
-            dataSet[i, dict['popularityScore']] = 1
-        else:
-            dataSet[i, dict['popularityScore']] = 0
-
-# ignoring categorization
-#if float(dataSet[i, dict['popularityScore']]) >= average:
-#dataSet[i, dict['popularityScore']] = 1
-
-#else:
-#dataSet[i, dict['popularityScore']] = 0
+        dataSet[i, dict['popularityScore']] = 0
 
 
 
@@ -174,47 +175,16 @@ for i in range(dataSet.shape[0]):
 #**************************************************************************#
 #   converting the input class labels to categorical labels for training   #
 #**************************************************************************#
-trainY = to_categorical(trainX[:, dict['popularityScore']], num_classes = 2)
+#trainY = to_categorical(trainX[:, dict['popularityScore']], num_classes = 2)
 
 # ignoring categorization
-#trainY = trainX[:, dict['popularityScore']]
+trainY = trainX[:, dict['popularityScore']]
 
 
 #*******************#
 #   defines model   #
 #*******************#
 x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
-
-# first naive try #
-#*****************#
-# ~ 50% accuracy (no matter what)
-
-#y = Conv2D(filters=64, kernel_size=(7, 7), activation='relu')(x)
-#y = MaxPool2D(pool_size=(3, 3))(y)
-#y = Conv2D(filters=128, kernel_size=(5, 5), activation='relu')(y)
-#y = MaxPool2D(pool_size=(3, 3))(y)
-#y = Conv2D(filters=192, kernel_size=(3, 3), activation='relu')(y)
-#y = MaxPool2D(pool_size=(3, 3))(y)
-
-#y = Flatten()(y)
-
-#y = Dense(256, activation='relu')(y)
-#y = Dense(256, activation='relu')(y)
-#y = Dense(2, activation='softmax')(y)
-
-
-# simple approach #
-#*****************#
-# ~ 66% accuracy (32x32, batch=128, epochs=10, t > 300s)
-# ~ 68% accuracy (64x64, batch=128, epochs=10, t > 2200s)
-
-#y = Conv2D(filters=64, kernel_size=(7, 7), activation='relu')(x)
-#y = MaxPool2D(pool_size=(3, 3))(y)
-
-#y = Flatten()(y)
-
-#y = Dense(128, activation='relu')(y)
-#y = Dense(2, activation='softmax')(y)
 
 
 # "successful" approach #
@@ -324,7 +294,7 @@ y = MaxPool2D(pool_size=(2, 2))(y)
 y = Dense(40, activation='relu')(y)
 y = MaxPool2D(pool_size=(2, 2))(y)
 y = Flatten()(y)
-y = Dense(2, activation='softmax')(y)
+y = Dense(1, activation='sigmoid')(y)
 
 
 #***********************#
@@ -335,13 +305,15 @@ model.summary()
 
 sgd = optimizers.SGD(lr=0.01)
 adam = optimizers.Adam(lr=0.0001)
+
+checkpoint = ModelCheckpoint(filepath='model.h5', save_best_only=True)
+
 model.compile(optimizer=sgd, loss='binary_crossentropy', metrics=['accuracy'])
 
-model.fit(x=imgTrainX, y=trainY, batch_size=128, epochs=30, validation_split=0.2)
+model.fit(x=imgTrainX, y=trainY, batch_size=128, epochs=60, validation_split=0.2,
+          callbacks=[checkpoint])
 print "time spent on training:", time.time() - tick, "s"
 tick = time.time()
-
-model.save('model.h5')
 
 
 #*****************#
@@ -378,4 +350,3 @@ for i in xrange(3):
         plt.title("Ground Truth: %s, \n Prediction %s" %
                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
 plt.show()
-
