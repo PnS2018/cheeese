@@ -97,16 +97,13 @@ tick = time.time()
 
 # uncomment code below to set color channel to 1 #
 #************************************************#
-# print("Type of dataset is {}".format(imgDataSet.dtype))
 imgDataSet = color.rgb2grey(imgDataSet)
-# print("Type of dataset is {}".format(imgDataSet.dtype))
 imgDataSet = np.expand_dims(imgDataSet, axis=3)
 print "time to set color channel to 1:", time.time() - tick, "s"
 tick = time.time()
 
 # imgDataSet = imgDataSet.astype('float32')/255.
 
-# print("Max and min values in the dataset are {} and {}".format(np.max(imgDataSet), np.min(imgDataSet)))
 
 #*******************************************#
 #   splits data set in train and test set   #
@@ -189,24 +186,39 @@ testY = testX[:, dict['popularityScore']]
 x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 
 
-# desperate approaches #
-#**********************#
-y = Conv2D(filters=64, kernel_size=(7, 7), activation='relu')(x)
-y = MaxPool2D(pool_size=(3, 3))(y)
-y = Dropout(rate=0.2)(y)
-y = Conv2D(filters=128, kernel_size=(5, 5), activation='relu')(y)
-y = MaxPool2D(pool_size=(3, 3))(y)
-y = Dropout(rate=0.2)(y)
-y = Conv2D(filters=196, kernel_size=(3, 3), activation='relu')(y)
-y = MaxPool2D(pool_size=(3, 3))(y)
-y = Dropout(rate=0.2)(y)
+# first approach #
+#**#*************#
+#y = Conv2D(filters=64, kernel_size=(7, 7), activation='relu')(x)
+#y = MaxPool2D(pool_size=(3, 3))(y)
+#y = Dropout(rate=0.2)(y)
+#y = Conv2D(filters=128, kernel_size=(5, 5), activation='relu')(y)
+#y = MaxPool2D(pool_size=(3, 3))(y)
+#y = Dropout(rate=0.2)(y)
+#y = Conv2D(filters=196, kernel_size=(3, 3), activation='relu')(y)
+#y = MaxPool2D(pool_size=(3, 3))(y)
+#y = Dropout(rate=0.2)(y)
 
+#y = Flatten()(y)
+
+#y = Dense(128, activation='relu')(y)
+#y = Dropout(rate=0.2)(y)
+#y = Dense(128, activation='relu')(y)
+#y = Dropout(rate=0.2)(y)
+#y = Dense(1, activation='sigmoid')(y)
+
+
+# approach #
+#**#*******#
+y = Conv2D(filters=96, kernel_size=(11, 11), strides=(4, 4), activation='relu')(y)
+y = Conv2D(filters=256, kernel_size=(5, 5), strides=(1, 1), activation='relu')(y)
+y = MaxPool2D(pool_size=(2, 2))(y)
+y = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1),  activation='relu')(y)
+y = MaxPool2D(pool_size=(2, 2))(y)
+y = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1), activation='relu')(y)
+y = Conv2D(filters=256, kernel_size=(3, 3), strides=(1, 1), activation='relu')(y)
 y = Flatten()(y)
-
-y = Dense(128, activation='relu')(y)
-y = Dropout(rate=0.2)(y)
-y = Dense(128, activation='relu')(y)
-y = Dropout(rate=0.2)(y)
+y = Dense(4096, activation='relu')(y)
+y = Dense(4096, activation='relu')(y)
 y = Dense(1, activation='sigmoid')(y)
 
 
@@ -273,4 +285,3 @@ for i in xrange(3):
         plt.title("Ground Truth: %s, \n Prediction %s" %
                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
 plt.show()
-
