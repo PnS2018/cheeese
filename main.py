@@ -190,17 +190,17 @@ x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 #**********************#
 # ~ 70% accuracy, ~ 67% val_acc (64x64 COLOR and fl32/255, batch=128, epochs=50, t > 12000s)
 # ~ 70% accuracy, ~ 67% val_acc (32x32 COLOR and fl32/255, batch=16, epochs=20, t > 2400s)#
-y = Conv2D(filters=16, kernel_size=(7, 7), activation='relu')(x)
+y = Conv2D(filters=32, kernel_size=(7, 7), activation='relu')(x)
 y = MaxPool2D(pool_size=(3, 3))(y)
-y = Conv2D(filters=32, kernel_size=(5, 5), activation='relu')(y)
+y = Conv2D(filters=64, kernel_size=(5, 5), activation='relu')(y)
 y = MaxPool2D(pool_size=(3, 3))(y)
-y = Conv2D(filters=64, kernel_size=(3, 3), activation='relu')(y)
+y = Conv2D(filters=128, kernel_size=(3, 3), activation='relu')(y)
 y = MaxPool2D(pool_size=(3, 3))(y)
 
 y = Flatten()(y)
 
-y = Dense(64, activation='relu')(y)
-y = Dense(64, activation='relu')(y)
+y = Dense(128, activation='relu')(y)
+y = Dense(128, activation='relu')(y)
 y = Dense(1, activation='sigmoid')(y)
 
 
@@ -227,11 +227,11 @@ model = Model(x, y)
 model.summary()
 
 sgd = optimizers.SGD(lr=0.01)
-adam = optimizers.Adam(lr=0.0001)
+adam = optimizers.Adam(lr=0.001)
 
 checkpoint = ModelCheckpoint(filepath='model.h5', save_best_only=True)
 
-model.compile(optimizer=sgd, loss='binary_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['accuracy'])
 
 batchSize = 128
 model.fit(x=imgTrainX, y=trainY, batch_size=batchSize, epochs=60, validation_split=0.2,
@@ -267,3 +267,4 @@ for i in xrange(3):
         plt.title("Ground Truth: %s, \n Prediction %s" %
                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
 plt.show()
+
