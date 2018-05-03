@@ -188,19 +188,22 @@ x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 
 # desperate approaches #
 #**********************#
-# ~ 70% accuracy, ~ 67% val_acc (64x64 COLOR and fl32/255, batch=128, epochs=50, t > 12000s)
-# ~ 70% accuracy, ~ 67% val_acc (32x32 COLOR and fl32/255, batch=16, epochs=20, t > 2400s)#
 y = Conv2D(filters=32, kernel_size=(7, 7), activation='relu')(x)
 y = MaxPool2D(pool_size=(3, 3))(y)
+y = Dropout(rate=0.1)(y)
 y = Conv2D(filters=64, kernel_size=(5, 5), activation='relu')(y)
 y = MaxPool2D(pool_size=(3, 3))(y)
+y = Dropout(rate=0.1)(y)
 y = Conv2D(filters=128, kernel_size=(3, 3), activation='relu')(y)
 y = MaxPool2D(pool_size=(3, 3))(y)
+y = Dropout(rate=0.1)(y)
 
 y = Flatten()(y)
 
 y = Dense(128, activation='relu')(y)
+y = Dropout(rate=0.1)(y)
 y = Dense(128, activation='relu')(y)
+y = Dropout(rate=0.1)(y)
 y = Dense(1, activation='sigmoid')(y)
 
 
@@ -243,7 +246,7 @@ tick = time.time()
 #*****************#
 #   tests model   #
 #*****************#
-model.evaluate(imgTestX, testY, batch_size=batchSize)
+print(model.evaluate(imgTestX, testY, batch_size=batchSize))
 
 
 #*****************************************#
@@ -267,4 +270,3 @@ for i in xrange(3):
         plt.title("Ground Truth: %s, \n Prediction %s" %
                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
 plt.show()
-
