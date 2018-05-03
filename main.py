@@ -84,7 +84,7 @@ dict = {
 #********************#
 dataSet = np.loadtxt('selfie_dataset.txt', dtype=object)
 
-imgDataSet = np.load('selfie_dataset_64x64.npy')
+imgDataSet = np.load('selfie_dataset_128x128.npy')
 print "time to load data set:", time.time() - tick, "s"
 tick = time.time()
 
@@ -97,12 +97,12 @@ tick = time.time()
 
 # uncomment code below to set color channel to 1 #
 #************************************************#
-imgDataSet = color.rgb2grey(imgDataSet)
-imgDataSet = np.expand_dims(imgDataSet, axis=3)
-print "time to set color channel to 1:", time.time() - tick, "s"
-tick = time.time()
+#imgDataSet = color.rgb2grey(imgDataSet)
+#imgDataSet = np.expand_dims(imgDataSet, axis=3)
+#print "time to set color channel to 1:", time.time() - tick, "s"
+#tick = time.time()
 
-#imgDataSet = imgDataSet.astype('float32')/255.
+imgDataSet = imgDataSet.astype('float32')/255.
 
 
 #*******************************************#
@@ -248,7 +248,7 @@ model = Model(x, y)
 model.summary()
 
 sgd = optimizers.SGD(lr=0.01)
-adam = optimizers.Adam(lr=0.001)
+adam = optimizers.Adam(lr=0.0001)
 
 checkpoint = ModelCheckpoint(filepath='model.h5', save_best_only=True)
 
@@ -288,3 +288,4 @@ for i in xrange(3):
         plt.title("Ground Truth: %s, \n Prediction %s" %
                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
 plt.show()
+ 
