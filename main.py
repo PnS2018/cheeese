@@ -149,11 +149,11 @@ maleAverage /= maleLength
 #***********************************************************#
 for i in range(dataSet.shape[0]):
     
-    #if int(dataSet[i, dict['female']]) == 1:
-    #if float(dataSet[i, dict['popularityScore']]) >= femaleAverage:
-    #dataSet[i, dict['popularityScore']] = 1
-    else:
-        dataSet[i, dict['popularityScore']] = 0
+    if int(dataSet[i, dict['female']]) == 1:
+        if float(dataSet[i, dict['popularityScore']]) >= femaleAverage:
+            dataSet[i, dict['popularityScore']] = 1
+        else:
+            dataSet[i, dict['popularityScore']] = 0
     
     else:
         if float(dataSet[i, dict['popularityScore']]) >= maleAverage:
