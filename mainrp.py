@@ -12,6 +12,8 @@
 # import the necessary packages
 from picamera.array import PiRGBArray
 from picamera import PiCamera
+from keras.models import load_model      #
+import model.h5
 import time
 import cv2
 
@@ -34,7 +36,8 @@ time.sleep(0.2)
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
   # grab the raw NumPy array representing the image, then initialize the timestamp
   # and occupied/unoccupied text
-  selfiePoints = model.predict(frame)
+
+  selfiePoints = model.h5.predict(frame)
   if selfiePoints > average:             #if selfie better than averagePopularityScore
     cv2.imshow('goodSelfie', image)              #show picture on Monitor
     cv2.imwrite('/goodSelfies/goodSelfie.png', image)       #safe picture in goodSelfies folder
