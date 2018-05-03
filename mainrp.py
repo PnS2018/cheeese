@@ -63,6 +63,7 @@ import time
 import cv2
 
 model = load_model('model.h5')
+size = 32
 
 # open the camera
 cap = cv2.VideoCapture(0)
@@ -70,15 +71,17 @@ cap = cv2.VideoCapture(0)
 while(True):
     # Capture frame-by-frame
     ret, frame = cap.read()
-    selfiePoints = model.predict(frame)
+    img = frame
+    cv2.resize(frame, dsize=size)
+    selfiePoints = model.predict(np.expand_dims(frame, axis=0))
     if selfiePoints > average:             #if selfie better than averagePopularityScore
-        cv2.imshow('goodSelfie', image)              #show picture on Monitor
-        cv2.imwrite('/goodSelfies/goodSelfie.png', image)       #safe picture in goodSelfies folder
+        cv2.imshow('goodSelfie', img)              #show picture on Monitor
+        cv2.imwrite('/goodSelfies/goodSelfie.png', img)       #safe picture in goodSelfies folder
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     else:                                 #if worse than averagePopularityScore
-          cv2.imshow('badSelfie', image)    #show picture on Monitor
-          cv2.imwrite('/badSelfies/badSelfie.png', image) #safe picture in badSelfies folder
+          cv2.imshow('badSelfie', img)    #show picture on Monitor
+          cv2.imwrite('/badSelfies/badSelfie.png', img) #safe picture in badSelfies folder
           if cv2.waitKey(1) & 0xFF == ord('q'):
               break
 
