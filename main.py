@@ -84,7 +84,7 @@ dict = {
 #********************#
 dataSet = np.loadtxt('selfie_dataset.txt', dtype=object)
 
-imgDataSet = np.load('selfie_dataset_128x128.npy')
+imgDataSet = np.load('selfie_dataset_32x32.npy')
 print "time to load data set:", time.time() - tick, "s"
 tick = time.time()
 
@@ -97,12 +97,12 @@ tick = time.time()
 
 # uncomment code below to set color channel to 1 #
 #************************************************#
-#imgDataSet = color.rgb2grey(imgDataSet)
-#imgDataSet = np.expand_dims(imgDataSet, axis=3)
-#print "time to set color channel to 1:", time.time() - tick, "s"
-#tick = time.time()
+imgDataSet = color.rgb2grey(imgDataSet)
+imgDataSet = np.expand_dims(imgDataSet, axis=3)
+print "time to set color channel to 1:", time.time() - tick, "s"
+tick = time.time()
 
-imgDataSet = imgDataSet.astype('float32')/255.
+#imgDataSet = imgDataSet.astype('float32')/255.
 
 
 #*******************************************#
@@ -185,7 +185,6 @@ testY = testX[:, dict['popularityScore']]
 #*******************#
 x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 
-
 # first approach #
 #**#*************#
 #y = Conv2D(filters=64, kernel_size=(7, 7), activation='relu')(x)
@@ -207,26 +206,26 @@ x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 #y = Dense(1, activation='sigmoid')(y)
 
 
-# approach #
-#**#*******#
-y = Conv2D(filters=96, kernel_size=(11, 11), strides=(4, 4), activation='relu')(x)
-y = Conv2D(filters=256, kernel_size=(5, 5), strides=(1, 1), activation='relu')(y)
-y = MaxPool2D(pool_size=(2, 2), strides=(1, 1))(y)
-y = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1),  activation='relu')(y)
-y = MaxPool2D(pool_size=(2, 2), strides=(1, 1))(y)
-y = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1), activation='relu')(y)
-y = Conv2D(filters=256, kernel_size=(3, 3), strides=(1, 1), activation='relu')(y)
-y = MaxPool2D(pool_size=(2, 2), strides=(2, 2))(y)
-
-y = Flatten()(y)
-
-y = Dense(4096, activation='relu')(y)
-y = Dense(4096, activation='relu')(y)
-y = Dense(1, activation='sigmoid')(y)
-
-
-# testing denseNet #
+# complex approach #
 #******************#
+#y = Conv2D(filters=96, kernel_size=(11, 11), strides=(4, 4), activation='relu')(x)
+#y = Conv2D(filters=256, kernel_size=(5, 5), strides=(1, 1), activation='relu')(y)
+#y = MaxPool2D(pool_size=(2, 2), strides=(1, 1))(y)
+#y = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1),  activation='relu')(y)
+#y = MaxPool2D(pool_size=(2, 2), strides=(1, 1))(y)
+#y = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1), activation='relu')(y)
+#y = Conv2D(filters=256, kernel_size=(3, 3), strides=(1, 1), activation='relu')(y)
+#y = MaxPool2D(pool_size=(2, 2), strides=(2, 2))(y)
+
+#y = Flatten()(y)
+
+#y = Dense(4096, activation='relu')(y)
+#y = Dense(4096, activation='relu')(y)
+#y = Dense(1, activation='sigmoid')(y)
+
+
+# denseNet approach #
+#*******************#
 
 #y = Conv2D(filters=16, kernel_size=(7, 7), activation='relu')(x)
 #y = Dense(320, activation='relu')(y)
@@ -239,6 +238,17 @@ y = Dense(1, activation='sigmoid')(y)
 #y = MaxPool2D(pool_size=(3, 3))(y)
 #y = Flatten()(y)
 #y = Dense(1, activation='sigmoid')(y)
+
+
+# simple but most "successful" approach #
+#***************************************#
+y = Conv2D(filters=16, kernel_size=(3, 3), activation='relu')(x)
+y = MaxPool2D(pool_size=(3, 3))(y)
+y = Dropout(rate=0.2)(y)
+y = Flatten()(y)
+y = Dense(128, activation='relu')(y)
+y = Dropout(rate=0.2)(y)
+y = Dense(1, activation='sigmoid')(y)
 
 
 #***********************#
@@ -255,7 +265,7 @@ checkpoint = ModelCheckpoint(filepath='model.h5', save_best_only=True)
 model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['accuracy'])
 
 batchSize = 32
-model.fit(x=imgTrainX, y=trainY, batch_size=batchSize, epochs=60, validation_split=0.2,
+model.fit(x=imgTrainX, y=trainY, batch_size=batchSize, epochs=50, validation_split=0.2,
           callbacks=[checkpoint])
 print "time spent on training:", time.time() - tick, "s"
 tick = time.time()
@@ -264,7 +274,8 @@ tick = time.time()
 #*****************#
 #   tests model   #
 #*****************#
-print(model.evaluate(imgTestX, testY, batch_size=batchSize))
+accuracy = model.evaluate(imgTestX, testY, batch_size=batchSize)[1]
+print "test accuracy:", accuracy
 
 
 #*****************************************#
@@ -278,13 +289,15 @@ preds = (model.predict(testXvis) > 0.5)[:, 0].astype(np.int)
 labels = ["bad", "good"]
 
 # removes dimension for plotting (use when color channel 1)
-#imgTestX = np.squeeze(imgTestX, axis=3)
+imgTestX = np.squeeze(imgTestX, axis=3)
 
-plt.figure()
-for i in xrange(3):
-    for j in xrange(5):
-        plt.subplot(3, 5, 5*i + j + 1)
-        plt.imshow(imgTestX[5*i + j], cmap="gray")
-        plt.title("Ground Truth: %s, \n Prediction %s" %
-                  (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
-plt.show()
+
+# uncomment code below to plot images...
+#plt.figure()
+#for i in xrange(3):
+#for j in xrange(5):
+#plt.subplot(3, 5, 5*i + j + 1)
+#plt.imshow(imgTestX[5*i + j], cmap="gray")
+#plt.title("Ground Truth: %s, \n Prediction %s" %
+#(labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
+#plt.show()
