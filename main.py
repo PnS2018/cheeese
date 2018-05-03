@@ -190,20 +190,20 @@ x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 #**********************#
 y = Conv2D(filters=32, kernel_size=(7, 7), activation='relu')(x)
 y = MaxPool2D(pool_size=(3, 3))(y)
-y = Dropout(rate=0.1)(y)
+y = Dropout(rate=0.2)(y)
 y = Conv2D(filters=64, kernel_size=(5, 5), activation='relu')(y)
 y = MaxPool2D(pool_size=(3, 3))(y)
-y = Dropout(rate=0.1)(y)
+y = Dropout(rate=0.2)(y)
 y = Conv2D(filters=128, kernel_size=(3, 3), activation='relu')(y)
 y = MaxPool2D(pool_size=(3, 3))(y)
-y = Dropout(rate=0.1)(y)
+y = Dropout(rate=0.2)(y)
 
 y = Flatten()(y)
 
 y = Dense(128, activation='relu')(y)
-y = Dropout(rate=0.1)(y)
+y = Dropout(rate=0.2)(y)
 y = Dense(128, activation='relu')(y)
-y = Dropout(rate=0.1)(y)
+y = Dropout(rate=0.2)(y)
 y = Dense(1, activation='sigmoid')(y)
 
 
@@ -236,7 +236,7 @@ checkpoint = ModelCheckpoint(filepath='model.h5', save_best_only=True)
 
 model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['accuracy'])
 
-batchSize = 128
+batchSize = 32
 model.fit(x=imgTrainX, y=trainY, batch_size=batchSize, epochs=60, validation_split=0.2,
           callbacks=[checkpoint])
 print "time spent on training:", time.time() - tick, "s"
@@ -270,3 +270,4 @@ for i in xrange(3):
         plt.title("Ground Truth: %s, \n Prediction %s" %
                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
 plt.show()
+
