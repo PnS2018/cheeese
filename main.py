@@ -97,10 +97,10 @@ tick = time.time()
 
 # uncomment code below to set color channel to 1 #
 #************************************************#
-#imgDataSet = color.rgb2grey(imgDataSet)
-#imgDataSet = np.expand_dims(imgDataSet, axis=3)
-#print "time to set color channel to 1:", time.time() - tick, "s"
-#tick = time.time()
+imgDataSet = color.rgb2grey(imgDataSet)
+imgDataSet = np.expand_dims(imgDataSet, axis=3)
+print "time to set color channel to 1:", time.time() - tick, "s"
+tick = time.time()
 
 imgDataSet = imgDataSet.astype('float32')/255.
 
@@ -188,13 +188,13 @@ x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 
 # desperate approaches #
 #**********************#
-y = Conv2D(filters=32, kernel_size=(7, 7), activation='relu')(x)
+y = Conv2D(filters=64, kernel_size=(7, 7), activation='relu')(x)
 y = MaxPool2D(pool_size=(3, 3))(y)
 y = Dropout(rate=0.2)(y)
-y = Conv2D(filters=64, kernel_size=(5, 5), activation='relu')(y)
+y = Conv2D(filters=128, kernel_size=(5, 5), activation='relu')(y)
 y = MaxPool2D(pool_size=(3, 3))(y)
 y = Dropout(rate=0.2)(y)
-y = Conv2D(filters=128, kernel_size=(3, 3), activation='relu')(y)
+y = Conv2D(filters=196, kernel_size=(3, 3), activation='relu')(y)
 y = MaxPool2D(pool_size=(3, 3))(y)
 y = Dropout(rate=0.2)(y)
 
@@ -270,4 +270,3 @@ for i in xrange(3):
         plt.title("Ground Truth: %s, \n Prediction %s" %
                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
 plt.show()
-
