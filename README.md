@@ -14,6 +14,8 @@ Python Files
 ### main.py ###
 In here, our model is trained...
 Currently the most siple approach achieves the best results (validation accuracy and test accuracy of ~ 69.5%), with 32 by 32 sized images and color channel set to 1. The other models were not tested for long, but most of them also reach close to 70% validation accuracy, depending on image size and color / black and white.
+So if you leave everything as is you will get a trained model, which is saved as 'model.h5' in your local repository. With this model you can then run the cam.py file and see the results (if you have a web cam) self handed.
+However, if you decide to make changes to the trainig, feel free, the code is commented and should be more or less self explanatory.
 
 ### utils.py ###
 In here, a few helpful functions are defined...
@@ -21,12 +23,13 @@ In here, a few helpful functions are defined...
 ### cam.py ###
 In here, the interface for the camera is implemented...
 The camera captures the frames, which are then predicted (good/bad) by the loaded (trained) model. The accuracy (of the prediciton) is printed out to the console (under 0.5 -> bad/ over 0.5 -> good). When the camera is quit (using 'q'), the best image will be displayed and you will be asked, if you want to save the image.
+Make sure to uncomment the raspberry pi implementation and comment out the cam implementation, if you desire to run this file on a raspberry pi.
 
 
 Data Set
 ----------
 You can find the data set we used under https://polybox.ethz.ch/index.php/f/962785156. There you will find the original data set, as described below, and also the pre sized numpy arrays we used for training.
-
+We suggest using the pre sized numpy arrays, since main.py is currently implemented to use these.
 
 
 "Selfie dataset contains 46,836 selfie images annotated with 36 different attributes divided into several categories as follows. Gender: is female. Age: baby, child, teenager, youth, middle age, senior. Race: white, black, asian. Face shape: oval, round, heart. Facial gestures: smiling, frowning, mouth open, tongue out, duck face. Hair color: black, blond, brown, red. Hair shape: curly, straight, braid. Accessories: glasses, sunglasses, lipstick, hat, earphone. Misc.: showing cellphone, using mirror, having braces, partial face. Lighting condition: harsh, dim." (Source: http://crcv.ucf.edu/data/Selfie/)
