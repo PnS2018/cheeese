@@ -13,7 +13,6 @@ Python Files
 --------------
 ### main.py ###
 In here, our model is trained...
-
 Currently the most siple approach achieves the best results (validation accuracy of ~ 69.5%), with 32 by 32 sized images and color channel set to 1. The other models were not tested for long, but most of them also reach close to 70% validation accuracy, depending on image size and color / black and white.
 
 ### utils.py ###
@@ -21,7 +20,6 @@ In here, a few helpful functions are defined...
 
 ### cam.py ###
 In here, the interface for the camera is implemented...
-
 The camera captures the frames, which are then predicted (good/bad) by the loaded (trained) model. The accuracy (of the prediciton) is printed out to the console (under 0.5 -> bad/ over 0.5 -> good). When the camera is quit (using 'q'), the best image will be displayed and you will be asked, if you want to save the image.
 
 
