@@ -5,8 +5,7 @@
 # Authors: Julian Merkofer, Julian Moosmann, Selim Naji                                            #
 #                                                                                                  #
 # Purpose: How to Take a Good Selfie?                                                              #
-#                                                                                                  #
-# Version: 1.0                                                                                     #
+#          The deep learning model for our selfie classification is trained here.                  #
 #                                                                                                  #
 ####################################################################################################
 
@@ -90,10 +89,10 @@ tick = time.time()
 
 # uncomment code below to save data set in different sizes #
 #**********************************************************#
-#imgDataSet = resize(imgDataSet, (32, 32))
-#print "resized..."
-#np.save('selfie_dataset_32x32.npy', imgDataSet)
-#print "saved..."
+# imgDataSet = resize(imgDataSet, (32, 32))
+# print "resized..."
+# np.save('selfie_dataset_32x32.npy', imgDataSet)
+# print "saved..."
 
 # uncomment code below to set color channel to 1 #
 #************************************************#
@@ -102,7 +101,7 @@ imgDataSet = np.expand_dims(imgDataSet, axis=3)
 print "time to set color channel to 1:", time.time() - tick, "s"
 tick = time.time()
 
-#imgDataSet = imgDataSet.astype('float32')/255.
+# imgDataSet = imgDataSet.astype('float32')/255.
 
 
 #*******************************************#
@@ -148,23 +147,23 @@ maleAverage /= maleLength
 #   binaryfication of popularity score within two classes   #
 #***********************************************************#
 for i in range(dataSet.shape[0]):
-    
-    #if int(dataSet[i, dict['female']]) == 1:
-    #if float(dataSet[i, dict['popularityScore']]) >= femaleAverage:
-    #dataSet[i, dict['popularityScore']] = 1
-    #else:
-    #dataSet[i, dict['popularityScore']] = 0
-    
-    #else:
-    #if float(dataSet[i, dict['popularityScore']]) >= maleAverage:
-    #dataSet[i, dict['popularityScore']] = 1
-    #else:
-    #dataSet[i, dict['popularityScore']] = 0
-    
+
+    # if int(dataSet[i, dict['female']]) == 1:
+    #     if float(dataSet[i, dict['popularityScore']]) >= femaleAverage:
+    #         dataSet[i, dict['popularityScore']] = 1
+    #     else:
+    #         dataSet[i, dict['popularityScore']] = 0
+    #
+    # else:
+    #     if float(dataSet[i, dict['popularityScore']]) >= maleAverage:
+    #         dataSet[i, dict['popularityScore']] = 1
+    #     else:
+    #         dataSet[i, dict['popularityScore']] = 0
+
     # ignoring categorization
     if float(dataSet[i, dict['popularityScore']]) >= average:
         dataSet[i, dict['popularityScore']] = 1
-    
+
     else:
         dataSet[i, dict['popularityScore']] = 0
 
@@ -172,8 +171,8 @@ for i in range(dataSet.shape[0]):
 #**************************************************************************#
 #   converting the input class labels to categorical labels for training   #
 #**************************************************************************#
-#trainY = to_categorical(trainX[:, dict['popularityScore']], num_classes = 2)
-#testY = to_categorical(testX[:, dict['popularityScore']], num_classes = 2)
+# trainY = to_categorical(trainX[:, dict['popularityScore']], num_classes = 2)
+# testY = to_categorical(testX[:, dict['popularityScore']], num_classes = 2)
 
 # ignoring categorization
 trainY = trainX[:, dict['popularityScore']]
@@ -187,57 +186,56 @@ x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 
 # first approach #
 #**#*************#
-#y = Conv2D(filters=64, kernel_size=(7, 7), activation='relu')(x)
-#y = MaxPool2D(pool_size=(3, 3))(y)
-#y = Dropout(rate=0.2)(y)
-#y = Conv2D(filters=128, kernel_size=(5, 5), activation='relu')(y)
-#y = MaxPool2D(pool_size=(3, 3))(y)
-#y = Dropout(rate=0.2)(y)
-#y = Conv2D(filters=196, kernel_size=(3, 3), activation='relu')(y)
-#y = MaxPool2D(pool_size=(3, 3))(y)
-#y = Dropout(rate=0.2)(y)
-
-#y = Flatten()(y)
-
-#y = Dense(128, activation='relu')(y)
-#y = Dropout(rate=0.2)(y)
-#y = Dense(128, activation='relu')(y)
-#y = Dropout(rate=0.2)(y)
-#y = Dense(1, activation='sigmoid')(y)
+# y = Conv2D(filters=64, kernel_size=(7, 7), activation='relu')(x)
+# y = MaxPool2D(pool_size=(3, 3))(y)
+# y = Dropout(rate=0.2)(y)
+# y = Conv2D(filters=128, kernel_size=(5, 5), activation='relu')(y)
+# y = MaxPool2D(pool_size=(3, 3))(y)
+# y = Dropout(rate=0.2)(y)
+# y = Conv2D(filters=196, kernel_size=(3, 3), activation='relu')(y)
+# y = MaxPool2D(pool_size=(3, 3))(y)
+# y = Dropout(rate=0.2)(y)
+#
+# y = Flatten()(y)
+#
+# y = Dense(128, activation='relu')(y)
+# y = Dropout(rate=0.2)(y)
+# y = Dense(128, activation='relu')(y)
+# y = Dropout(rate=0.2)(y)
+# y = Dense(1, activation='sigmoid')(y)
 
 
 # complex approach #
 #******************#
-#y = Conv2D(filters=96, kernel_size=(11, 11), strides=(4, 4), activation='relu')(x)
-#y = Conv2D(filters=256, kernel_size=(5, 5), strides=(1, 1), activation='relu')(y)
-#y = MaxPool2D(pool_size=(2, 2), strides=(1, 1))(y)
-#y = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1),  activation='relu')(y)
-#y = MaxPool2D(pool_size=(2, 2), strides=(1, 1))(y)
-#y = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1), activation='relu')(y)
-#y = Conv2D(filters=256, kernel_size=(3, 3), strides=(1, 1), activation='relu')(y)
-#y = MaxPool2D(pool_size=(2, 2), strides=(2, 2))(y)
-
-#y = Flatten()(y)
-
-#y = Dense(4096, activation='relu')(y)
-#y = Dense(4096, activation='relu')(y)
-#y = Dense(1, activation='sigmoid')(y)
+# y = Conv2D(filters=96, kernel_size=(11, 11), strides=(4, 4), activation='relu')(x)
+# y = Conv2D(filters=256, kernel_size=(5, 5), strides=(1, 1), activation='relu')(y)
+# y = MaxPool2D(pool_size=(2, 2), strides=(1, 1))(y)
+# y = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1),  activation='relu')(y)
+# y = MaxPool2D(pool_size=(2, 2), strides=(1, 1))(y)
+# y = Conv2D(filters=384, kernel_size=(3, 3), strides=(1, 1), activation='relu')(y)
+# y = Conv2D(filters=256, kernel_size=(3, 3), strides=(1, 1), activation='relu')(y)
+# y = MaxPool2D(pool_size=(2, 2), strides=(2, 2))(y)
+#
+# y = Flatten()(y)
+#
+# y = Dense(4096, activation='relu')(y)
+# y = Dense(4096, activation='relu')(y)
+# y = Dense(1, activation='sigmoid')(y)
 
 
 # denseNet approach #
 #*******************#
-
-#y = Conv2D(filters=16, kernel_size=(7, 7), activation='relu')(x)
-#y = Dense(320, activation='relu')(y)
-#y = Conv2D(filters=32, kernel_size=(5, 5), activation='relu')(y)
-#y = MaxPool2D(pool_size=(3, 3))(y)
-#y = Dense(160, activation='relu')(y)
-#y = Conv2D(filters=64, kernel_size=(3, 3), activation='relu')(y)
-#y = MaxPool2D(pool_size=(3, 3))(y)
-#y = Dense(80, activation='relu')(y)
-#y = MaxPool2D(pool_size=(3, 3))(y)
-#y = Flatten()(y)
-#y = Dense(1, activation='sigmoid')(y)
+# y = Conv2D(filters=16, kernel_size=(7, 7), activation='relu')(x)
+# y = Dense(320, activation='relu')(y)
+# y = Conv2D(filters=32, kernel_size=(5, 5), activation='relu')(y)
+# y = MaxPool2D(pool_size=(3, 3))(y)
+# y = Dense(160, activation='relu')(y)
+# y = Conv2D(filters=64, kernel_size=(3, 3), activation='relu')(y)
+# y = MaxPool2D(pool_size=(3, 3))(y)
+# y = Dense(80, activation='relu')(y)
+# y = MaxPool2D(pool_size=(3, 3))(y)
+# y = Flatten()(y)
+# y = Dense(1, activation='sigmoid')(y)
 
 
 # simple but most "successful" approach #
@@ -264,7 +262,7 @@ checkpoint = ModelCheckpoint(filepath='model.h5', save_best_only=True)
 
 model.compile(optimizer=adam, loss='binary_crossentropy', metrics=['accuracy'])
 
-batchSize = 32
+batchSize = 32      # assures that same batch size is used while evaluating
 model.fit(x=imgTrainX, y=trainY, batch_size=batchSize, epochs=50, validation_split=0.2,
           callbacks=[checkpoint])
 print "time spent on training:", time.time() - tick, "s"
@@ -291,13 +289,12 @@ labels = ["bad", "good"]
 # removes dimension for plotting (use when color channel 1)
 imgTestX = np.squeeze(imgTestX, axis=3)
 
-
 # uncomment code below to plot images...
-#plt.figure()
-#for i in xrange(3):
-#for j in xrange(5):
-#plt.subplot(3, 5, 5*i + j + 1)
-#plt.imshow(imgTestX[5*i + j], cmap="gray")
-#plt.title("Ground Truth: %s, \n Prediction %s" %
-#(labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
-#plt.show()
+# plt.figure()
+# for i in xrange(3):
+#     for j in xrange(5):
+#         plt.subplot(3, 5, 5*i + j + 1)
+#         plt.imshow(imgTestX[5*i + j], cmap="gray")
+#         plt.title("Ground Truth: %s, \n Prediction %s" %
+#                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
+# plt.show()
