@@ -13,7 +13,7 @@ Python Files
 --------------
 ### main.py ###
 In here, our model is trained...
-Currently the most siple approach achieves the best results (validation accuracy of ~ 69.5%), with 32 by 32 sized images and color channel set to 1. The other models were not tested for long, but most of them also reach close to 70% validation accuracy, depending on image size and color / black and white.
+Currently the most siple approach achieves the best results (validation accuracy and test accuracy of ~ 69.5%), with 32 by 32 sized images and color channel set to 1. The other models were not tested for long, but most of them also reach close to 70% validation accuracy, depending on image size and color / black and white.
 
 ### utils.py ###
 In here, a few helpful functions are defined...
