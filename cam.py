@@ -7,8 +7,6 @@
 # Purpose: The interfaces of the web cam and the raspberry pi camera are implemented here          #
 #          (not sure where to put them... yet)                                                     #
 #                                                                                                  #
-# Version: 1.0                                                                                     #
-#                                                                                                  #
 ####################################################################################################
 
 
@@ -32,52 +30,52 @@ import cv2
 #                                                                                                  #
 #**************************************************************************************************#
 class WebCam():
-    
+
     #*********************************************************#
     #   constructs the camera with all necessary properties   #
     #*********************************************************#
     def __init__(self, model, size):
         self.model = model
         self.size = size
-    
-    
+
+
     #********************************************#
     #   activates camera and shows predictions   #
     #********************************************#
     def show(self):
         cap = cv2.VideoCapture(0)
         best = 0.
-        
+
         while (True):
             ret, frame = cap.read()
             img = cv2.resize(frame, dsize=self.size)
-            
+
             img = color.rgb2grey(img)
             img = np.expand_dims(img, axis=0)
             img = np.expand_dims(img, axis=3)
-            
+
             acc = self.model.predict(img, batch_size=1)
-            print "accuracy:", acc[0][1]
-            
-            if acc[0][1] > best:
+            print "accuracy:", acc[0][0]
+
+            if acc[0][0] > best:
                 bestImg = frame
-                best = acc[0][1]
-            
+                best = acc[0][0]
+
             cv2.imshow('yourself', frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
-        
+
         cap.release()
         cv2.destroyAllWindows()
-        
+
         print "\nbest accuracy:", best
-        
+
         cv2.imshow('best image', bestImg)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-        
-        answer = raw_input("do you want to save current image (y/n)?")
-        
+
+        answer = raw_input("do you want to save current image (y/n)? ")
+
         if answer == 'y':
             cv2.imwrite('selfies/selfie.png', bestImg)
 
@@ -123,11 +121,11 @@ camera.show()
 #             img = np.expand_dims(img, axis=3)
 #
 #             acc = self.model.predict(img, batch_size=1)
-#             print "accuracy:", acc[0][1]
+#             print "accuracy:", acc[0][0]
 #
-#             if acc[0][1] > best:
+#             if acc[0][0] > best:
 #                 bestImg = frame
-#                 best = acc[0][1]
+#                 best = acc[0][0]
 #
 #             cv2.imshow('yourself', frame)
 #             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -148,4 +146,3 @@ camera.show()
 #
 #         if answer == 'y':
 #             cv2.imwrite('selfies/selfie.png', bestImg)
-
