@@ -4,9 +4,7 @@
 #                                                                                                  #
 # Authors: Julian Merkofer, Julian Moosmann, Selim Naji                                            #
 #                                                                                                  #
-# Purpose: Helpful functions                                                                       #
-#                                                                                                  #
-# Version: 1.0                                                                                     #
+# Purpose: Helpful functions...                                                                    #
 #                                                                                                  #
 ####################################################################################################
 
