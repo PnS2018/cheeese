@@ -86,7 +86,6 @@ class WebCam():
         cv2.destroyAllWindows()
 
 
-
         answer = raw_input("do you want to save current image (y/n)? ")
 
         if answer == 'y':
@@ -145,6 +144,10 @@ class PiCam():
                 bestImg = display
                 best = acc[0][0]
 
+            if acc[0][0] < worst:
+                worstImg = frame
+                worst = acc[0][0]
+
             cv2.imshow('yourself', display)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -154,11 +157,17 @@ class PiCam():
 
         cv2.destroyAllWindows()
 
-        print "best accuracy:", best
+        print "\nbest accuracy:", best
+        print "\nworst accuracy:", worst
 
         cv2.imshow('best image', bestImg)
         cv2.waitKey(0)
+
+        cv2.imshow('worst image', worstImg)
+        cv2.waitKey(0)
+
         cv2.destroyAllWindows()
+
 
         answer = raw_input("do you want to save current image (y/n)?")
 
