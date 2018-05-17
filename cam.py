@@ -20,27 +20,25 @@ import numpy as np
 import cv2
 
 
-
-#**************************************************************************************************#
+# **************************************************************************************************#
 #                                          Class WebCam                                            #
-#**************************************************************************************************#
+# **************************************************************************************************#
 #                                                                                                  #
 # Implements the interface of the web cam.                                                         #
 #                                                                                                  #
-#**************************************************************************************************#
+# **************************************************************************************************#
 class WebCam():
 
-    #*********************************************************#
+    # *********************************************************#
     #   constructs the camera with all necessary properties   #
-    #*********************************************************#
+    # *********************************************************#
     def __init__(self, model, size):
         self.model = model
         self.size = size
 
-
-    #********************************************#
+    # ********************************************#
     #   activates camera and shows predictions   #
-    #********************************************#
+    # ********************************************#
     def show(self):
         cap = cv2.VideoCapture(0)
         best = 0.
@@ -77,7 +75,6 @@ class WebCam():
 
             start_time = time.time()
 
-
         cap.release()
         cv2.destroyAllWindows()
 
@@ -92,38 +89,35 @@ class WebCam():
 
         cv2.destroyAllWindows()
 
-
         answer = raw_input("do you want to save current image (y/n)? ")
 
         if answer == 'y':
             cv2.imwrite('selfies/selfie.png', bestImg)
 
 
-#camera = WebCam(load_model('model.h5'), (32, 32))
-#camera.show()
+# camera = WebCam(load_model('model.h5'), (32, 32))
+# camera.show()
 
 
-
-#**************************************************************************************************#
+# **************************************************************************************************#
 #                                           Class PiCam                                            #
-#**************************************************************************************************#
+# **************************************************************************************************#
 #                                                                                                  #
 # Implements the interface of the raspberry pi cam. (NOT TESTED)                                   #
 #                                                                                                  #
-#**************************************************************************************************#
+# **************************************************************************************************#
 class PiCam():
 
-    #*********************************************************#
+    # *********************************************************#
     #   constructs the camera with all necessary properties   #
-    #*********************************************************#
+    # *********************************************************#
     def __init__(self, model, size):
         self.model = model
         self.size = size
 
-
-    #********************************************#
+    # ********************************************#
     #   activates camera and shows predictions   #
-    #********************************************#
+    # ********************************************#
     def show(self):
         camera = PiCamera()
         camera.resolution = (640, 480)
@@ -172,14 +166,14 @@ class PiCam():
 
             start_time = time.time()
 
-
         cv2.destroyAllWindows()
 
         print "\nbest accuracy:", best
         print "\nworst accuracy:", worst
 
-        print("Average time taken per frame is {} seconds and standard deviation is {}.".format(np.mean(times),
-                                                                                                np.std(times)))
+        print("Average time taken per frame is {} seconds and standard deviation is {} over {} images.".format(
+            np.mean(times),
+            np.std(times), len(times)))
 
         cv2.imshow('best image', bestImg)
         cv2.waitKey(0)
@@ -188,7 +182,6 @@ class PiCam():
         cv2.waitKey(0)
 
         cv2.destroyAllWindows()
-
 
         answer = raw_input("do you want to save current image (y/n)?")
 
