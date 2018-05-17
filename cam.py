@@ -40,6 +40,8 @@ class WebCam():
     #   activates camera and shows predictions   #
     #********************************************#
     def show(self):
+        faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+
         cap = cv2.VideoCapture(0)
         best = 0.
         worst = 1.
@@ -49,6 +51,23 @@ class WebCam():
 
         while (True):
             ret, frame = cap.read()
+
+            display = frame
+            saveImg = frame
+
+            face = faceCascade.detectMultiScale(
+                frame,
+                scaleFactor=1.1,
+                minNeighbors=5,
+                minSize=(self.size)
+                # flags=cv2.CV_HAAR_SCALE_IMAGE
+            )
+            for (x, y, w, h) in face:
+                if y - 60 > 0 and y + h + 60 < frame.shape[0] and x - 20 > 0 \
+                and x + w + 20 < frame.shape[1]:
+                    frame = frame[(y - 60):(y + h + 60), (x - 20):(x + w + 20), :]
+                cv2.rectangle(display, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
             img = cv2.resize(frame, dsize=self.size)
 
             img = color.rgb2grey(img)
@@ -59,14 +78,14 @@ class WebCam():
             print "accuracy:", acc[0][0]
 
             if acc[0][0] > best:
-                bestImg = frame
+                bestImg = saveImg
                 best = acc[0][0]
 
             if acc[0][0] < worst:
-                worstImg = frame
+                worstImg = saveImg
                 worst = acc[0][0]
 
-            cv2.imshow('yourself', frame)
+            cv2.imshow('yourself', display)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
@@ -129,32 +148,21 @@ class PiCam():
         worst = 1.
 
         times = []
-        model_times = []
-        start_time = time.time()
-
-        cam_start_time = time.time()
+        tick = time.time()
 
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
-            print("Camera took {} seconds".format(time.time() - cam_start_time))
 
             display = frame.array
 
-            current_start = time.time()
             img = cv2.resize(display, dsize=self.size)
-            print("Resize took {}".format(time.time() - current_start))
 
-            current_start = time.time()
             img = color.rgb2grey(img)
             img = np.expand_dims(img, axis=0)
             img = np.expand_dims(img, axis=3)
-            print("Kill color took {}".format(time.time() - current_start))
 
-            model_start_time = time.time()
             acc = self.model.predict(img, batch_size=1)
-            model_end_time = time.time()
-            model_times.append(model_end_time - model_start_time)
 
             print "accuracy:", acc[0][0]
 
@@ -175,24 +183,15 @@ class PiCam():
 
             end_time = time.time()
 
-            print("Current frame took {} seconds.".format(end_time - start_time))
-            times.append(end_time - start_time)
-
-            start_time = time.time()
-            cam_start_time = time.time()
+            times.append(time.time() - tick)
+            tick = time.time()
 
         cv2.destroyAllWindows()
 
+        print "average time taken per frame is {} seconds".format(np.mean(times))
+
         print "\nbest accuracy:", best
         print "\nworst accuracy:", worst
-
-        print("Average time taken per frame is {} seconds and standard deviation is {} over {} images.".format(
-            np.mean(times),
-            np.std(times), len(times)))
-
-        print("Average model time taken per frame is {} seconds and standard deviation is {} over {} images.".format(
-            np.mean(model_times),
-            np.std(model_times), len(model_times)))
 
         cv2.imshow('best image', bestImg)
         cv2.waitKey(0)
