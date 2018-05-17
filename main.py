@@ -83,9 +83,21 @@ dict = {
 #********************#
 dataSet = np.loadtxt('selfie_dataset.txt', dtype=object)
 
-imgDataSet = np.load('selfie_dataset_32x32.npy')
+# imgDataSet = np.load('selfie_dataset_32x32.npy')
+# print "time to load data set:", time.time() - tick, "s"
+# tick = time.time()
+
+# uncomment code below to save data set in different sizes with faces centered #
+#******************************************************************************#
+imgDataSet = [cv2.imread('PATH TO DATA SET/' + str(fname) + ".jpg")
+             for fname in dataSet[:, dict['imageName']]]
 print "time to load data set:", time.time() - tick, "s"
 tick = time.time()
+
+imgDataSet = crop(imgDataSet, (32, 32))
+print "resized..."
+np.save('selfie_dataset_32x32_cropped.npy', imgDataSet)
+print "saved..."
 
 # uncomment code below to save data set in different sizes #
 #**********************************************************#
@@ -242,10 +254,10 @@ x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 #***************************************#
 y = Conv2D(filters=16, kernel_size=(3, 3), activation='relu')(x)
 y = MaxPool2D(pool_size=(3, 3))(y)
-y = Dropout(rate=0.2)(y)
+y = Dropout(rate=0.5)(y)
 y = Flatten()(y)
 y = Dense(128, activation='relu')(y)
-y = Dropout(rate=0.2)(y)
+y = Dropout(rate=0.5)(y)
 y = Dense(1, activation='sigmoid')(y)
 
 
@@ -290,11 +302,11 @@ labels = ["bad", "good"]
 imgTestX = np.squeeze(imgTestX, axis=3)
 
 # uncomment code below to plot images...
-# plt.figure()
-# for i in xrange(3):
-#     for j in xrange(5):
-#         plt.subplot(3, 5, 5*i + j + 1)
-#         plt.imshow(imgTestX[5*i + j], cmap="gray")
-#         plt.title("Ground Truth: %s, \n Prediction %s" %
-#                   (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
-# plt.show()
+plt.figure()
+for i in xrange(3):
+    for j in xrange(5):
+        plt.subplot(3, 5, 5*i + j + 1)
+        plt.imshow(imgTestX[5*i + j], cmap="gray")
+        plt.title("Ground Truth: %s, \n Prediction %s" %
+                  (labels[groundTruths[5*i + j]], labels[preds[5*i + j]]))
+plt.show()
