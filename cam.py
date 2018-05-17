@@ -127,7 +127,9 @@ class PiCam():
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
-            img = cv2.resize(frame, dsize=self.size)
+            img = frame.array
+
+            img = cv2.resize(img, dsize=self.size)
 
             img = color.rgb2grey(img)
             img = np.expand_dims(img, axis=0)
