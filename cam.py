@@ -121,15 +121,18 @@ class PiCam():
     def show(self):
         camera = PiCamera()
         camera.resolution = (640, 480)
-        camera.framerate = 15
+        camera.framerate = 30
         rawCapture = PiRGBArray(camera, size=(640, 480))
 
         best = 0.
         worst = 1.
 
+        cv2.imshow("temp", np.zeros((100, 100)))
+
         times = []
         model_times = []
         start_time = time.time()
+
 
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -161,7 +164,7 @@ class PiCam():
                 worstImg = display
                 worst = acc[0][0]
 
-            cv2.imshow('yourself', display)
+            #cv2.imshow('yourself', display)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
