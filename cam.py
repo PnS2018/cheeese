@@ -44,7 +44,7 @@ class WebCam():
         best = 0.
         worst = 1.
 
-        start_time = time.time()
+        tick = time.time()
 
         while (True):
             ret, frame = cap.read()
@@ -69,11 +69,8 @@ class WebCam():
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-            end_time = time.time()
-
-            print("Current frame took {} seconds.".format(end_time - start_time))
-
-            start_time = time.time()
+            print("Current frame took {} seconds.".format(time.time() - tick))
+            tick = time.time()
 
         cap.release()
         cv2.destroyAllWindows()
@@ -121,7 +118,7 @@ class PiCam():
     def show(self):
         camera = PiCamera()
         camera.resolution = (320, 240)
-        camera.framerate = 30
+        camera.framerate = 32
         rawCapture = PiRGBArray(camera, size=(320, 240))
 
         best = 0.
