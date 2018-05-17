@@ -46,6 +46,8 @@ class WebCam():
         best = 0.
         worst = 1.
 
+        start_time = time.time()
+
         while (True):
             ret, frame = cap.read()
             img = cv2.resize(frame, dsize=self.size)
@@ -68,6 +70,12 @@ class WebCam():
             cv2.imshow('yourself', frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
+
+            end_time = time.time()
+
+            print("Current frame took {} seconds.".format(end_time - start_time))
+
+            start_time = time.time()
 
 
         cap.release()
@@ -125,6 +133,7 @@ class PiCam():
         best = 0.
         worst = 1.
 
+        times = []
         start_time = time.time()
 
         # capture frames from the camera
@@ -159,6 +168,7 @@ class PiCam():
             end_time = time.time()
 
             print("Current frame took {} seconds.".format(end_time - start_time))
+            times.append(end_time - start_time)
 
             start_time = time.time()
 
@@ -167,6 +177,9 @@ class PiCam():
 
         print "\nbest accuracy:", best
         print "\nworst accuracy:", worst
+
+        print("Average time taken per frame is {} seconds and standard deviation is {}.".format(np.mean(times),
+                                                                                                np.std(times)))
 
         cv2.imshow('best image', bestImg)
         cv2.waitKey(0)
