@@ -9,8 +9,8 @@
 #                                                                                                  #
 ####################################################################################################
 import time
-from picamera.array import PiRGBArray
-from picamera import PiCamera
+#from picamera.array import PiRGBArray
+#from picamera import PiCamera
 
 from keras.models import load_model
 
@@ -20,30 +20,31 @@ import numpy as np
 import cv2
 
 
-# **************************************************************************************************#
+#**************************************************************************************************#
 #                                          Class WebCam                                            #
-# **************************************************************************************************#
+#**************************************************************************************************#
 #                                                                                                  #
 # Implements the interface of the web cam.                                                         #
 #                                                                                                  #
-# **************************************************************************************************#
+#**************************************************************************************************#
 class WebCam():
 
-    # *********************************************************#
+    #*********************************************************#
     #   constructs the camera with all necessary properties   #
-    # *********************************************************#
+    #*********************************************************#
     def __init__(self, model, size):
         self.model = model
         self.size = size
 
-    # ********************************************#
+    #********************************************#
     #   activates camera and shows predictions   #
-    # ********************************************#
+    #********************************************#
     def show(self):
         cap = cv2.VideoCapture(0)
         best = 0.
         worst = 1.
 
+        times = []
         tick = time.time()
 
         while (True):
@@ -69,11 +70,13 @@ class WebCam():
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-            print("Current frame took {} seconds.".format(time.time() - tick))
+            times.append(time.time() - tick)
             tick = time.time()
 
         cap.release()
         cv2.destroyAllWindows()
+
+        print "average time taken per frame is {} seconds".format(np.mean(times))
 
         print "\nbest accuracy:", best
         print "\nworst accuracy:", worst
@@ -92,17 +95,18 @@ class WebCam():
             cv2.imwrite('selfies/selfie.png', bestImg)
 
 
-# camera = WebCam(load_model('model.h5'), (32, 32))
-# camera.show()
+camera = WebCam(load_model('model.h5'), (32, 32))
+camera.show()
 
 
-# **************************************************************************************************#
+
+#**************************************************************************************************#
 #                                           Class PiCam                                            #
-# **************************************************************************************************#
+#**************************************************************************************************#
 #                                                                                                  #
 # Implements the interface of the raspberry pi cam. (NOT TESTED)                                   #
 #                                                                                                  #
-# **************************************************************************************************#
+#**************************************************************************************************#
 class PiCam():
 
     #*********************************************************#
@@ -204,5 +208,5 @@ class PiCam():
             cv2.imwrite('selfies/selfie.png', bestImg)
 
 
-camera = PiCam(load_model('model.h5'), (32, 32))
-camera.show()
+#camera = PiCam(load_model('model.h5'), (32, 32))
+#camera.show()
