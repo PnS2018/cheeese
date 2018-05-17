@@ -128,6 +128,7 @@ class PiCam():
         worst = 1.
 
         times = []
+        model_times = []
         start_time = time.time()
 
         # capture frames from the camera
@@ -141,7 +142,11 @@ class PiCam():
             img = np.expand_dims(img, axis=0)
             img = np.expand_dims(img, axis=3)
 
+            model_start_time = time.time()
             acc = self.model.predict(img, batch_size=1)
+            model_end_time = time.time()
+            model_times.append(model_end_time - model_start_time)
+
             print "accuracy:", acc[0][0]
 
             if acc[0][0] > best:
@@ -174,6 +179,10 @@ class PiCam():
         print("Average time taken per frame is {} seconds and standard deviation is {} over {} images.".format(
             np.mean(times),
             np.std(times), len(times)))
+
+        print("Average model time taken per frame is {} seconds and standard deviation is {} over {} images.".format(
+            np.mean(model_times),
+            np.std(model_times), len(model_times)))
 
         cv2.imshow('best image', bestImg)
         cv2.waitKey(0)
