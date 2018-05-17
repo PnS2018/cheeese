@@ -127,15 +127,16 @@ class PiCam():
         best = 0.
         worst = 1.
 
-        cv2.imshow("temp", np.zeros((100, 100)))
-
         times = []
         model_times = []
         start_time = time.time()
 
+        cam_start_time = time.time()
 
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+
+            print("Camera took {} seconds".format(time.time() - cam_start_time))
 
             display = frame.array
 
@@ -164,7 +165,7 @@ class PiCam():
                 worstImg = display
                 worst = acc[0][0]
 
-            #cv2.imshow('yourself', display)
+            cv2.imshow('yourself', img)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
@@ -177,6 +178,7 @@ class PiCam():
             times.append(end_time - start_time)
 
             start_time = time.time()
+            cam_start_time = time.time()
 
         cv2.destroyAllWindows()
 
