@@ -8,8 +8,7 @@
 #          (not sure where to put them... yet)                                                     #
 #                                                                                                  #
 ####################################################################################################
-
-
+import time
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 
@@ -126,6 +125,8 @@ class PiCam():
         best = 0.
         worst = 1.
 
+        start_time = time.time()
+
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
@@ -154,6 +155,13 @@ class PiCam():
 
             # clear the stream in preparation for the next frame
             rawCapture.truncate(0)
+
+            end_time = time.time()
+
+            print("Current frame took {} seconds.".format(end_time - start_time))
+
+            start_time = time.time()
+
 
         cv2.destroyAllWindows()
 
