@@ -124,6 +124,9 @@ class PiCam():
         camera.framerate = 15
         rawCapture = PiRGBArray(camera, size=(640, 480))
 
+        best = 0.
+        worst = 1.
+        
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
