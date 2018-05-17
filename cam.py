@@ -108,16 +108,16 @@ class WebCam():
 # **************************************************************************************************#
 class PiCam():
 
-    # *********************************************************#
+    #*********************************************************#
     #   constructs the camera with all necessary properties   #
-    # *********************************************************#
+    #*********************************************************#
     def __init__(self, model, size):
         self.model = model
         self.size = size
 
-    # ********************************************#
+    #********************************************#
     #   activates camera and shows predictions   #
-    # ********************************************#
+    #********************************************#
     def show(self):
         camera = PiCamera()
         camera.resolution = (640, 480)
@@ -136,11 +136,15 @@ class PiCam():
 
             display = frame.array
 
+            current_start = time.time()
             img = cv2.resize(display, dsize=self.size)
+            print("Resize took {}".format(time.time() - current_start))
 
+            current_start = time.time()
             img = color.rgb2grey(img)
             img = np.expand_dims(img, axis=0)
             img = np.expand_dims(img, axis=3)
+            print("Kill color took {}".format(time.time() - current_start))
 
             model_start_time = time.time()
             acc = self.model.predict(img, batch_size=1)
