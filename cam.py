@@ -145,7 +145,7 @@ class PiCam():
                 best = acc[0][0]
 
             if acc[0][0] < worst:
-                worstImg = frame
+                worstImg = display
                 worst = acc[0][0]
 
             cv2.imshow('yourself', display)
