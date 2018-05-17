@@ -126,13 +126,13 @@ class PiCam():
 
         best = 0.
         worst = 1.
-        
+
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
-            img = frame.array
+            display = frame.array
 
-            img = cv2.resize(img, dsize=self.size)
+            img = cv2.resize(display, dsize=self.size)
 
             img = color.rgb2grey(img)
             img = np.expand_dims(img, axis=0)
@@ -142,10 +142,10 @@ class PiCam():
             print "accuracy:", acc[0][0]
 
             if acc[0][0] > best:
-                bestImg = frame
+                bestImg = display
                 best = acc[0][0]
 
-            cv2.imshow('yourself', frame)
+            cv2.imshow('yourself', display)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
