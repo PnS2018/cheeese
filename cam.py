@@ -168,13 +168,14 @@ class PiCam():
 
             display = frame.array
             saveImg = frame.array.copy()
+            gray = cv2.cvtColor(frame.array, cv2.COLOR_BGR2GRAY)
 
             if i % 10 == 0:
                 face = faceCascade.detectMultiScale(
-                    frame,
+                    gray,
                     scaleFactor=1.1,
                     minNeighbors=5,
-                    minSize=(self.size)
+                    minSize=(int(32), int(32))
                     # flags=cv2.CV_HAAR_SCALE_IMAGE
                 )
             i += 1
