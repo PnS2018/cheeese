@@ -9,8 +9,8 @@
 #                                                                                                  #
 ####################################################################################################
 import time
-#from picamera.array import PiRGBArray
-#from picamera import PiCamera
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
 from keras.models import load_model
 
@@ -46,22 +46,29 @@ class WebCam():
         best = 0.
         worst = 1.
 
+        i = 0
+
         times = []
         tick = time.time()
 
         while (True):
             ret, frame = cap.read()
 
-            display = frame
-            saveImg = frame
+            frame = cv2.flip(frame, 1)
 
-            face = faceCascade.detectMultiScale(
-                frame,
-                scaleFactor=1.1,
-                minNeighbors=5,
-                minSize=(self.size)
-                # flags=cv2.CV_HAAR_SCALE_IMAGE
-            )
+            display = frame
+            saveImg = frame.copy()
+
+            if i % 10 == 0:
+                face = faceCascade.detectMultiScale(
+                    frame,
+                    scaleFactor=1.1,
+                    minNeighbors=5,
+                    minSize=(self.size)
+                    # flags=cv2.CV_HAAR_SCALE_IMAGE
+                )
+            i += 1
+
             for (x, y, w, h) in face:
                 if y - 60 > 0 and y + h + 60 < frame.shape[0] and x - 20 > 0 \
                 and x + w + 20 < frame.shape[1]:
@@ -108,14 +115,15 @@ class WebCam():
 
         cv2.destroyAllWindows()
 
-        answer = raw_input("do you want to save current image (y/n)? ")
+        answer = raw_input("do you want to save current images (y/n)? ")
 
         if answer == 'y':
-            cv2.imwrite('selfies/selfie.png', bestImg)
+            cv2.imwrite('selfies/bestSelfie.png', bestImg)
+            cv2.imwrite('selfies/worstSelfie.png', worstImg)
 
 
-camera = WebCam(load_model('model.h5'), (32, 32))
-camera.show()
+#camera = WebCam(load_model('simpleModel.h5'), (32, 32))
+#camera.show()
 
 
 
@@ -144,8 +152,12 @@ class PiCam():
         camera.framerate = 32
         rawCapture = PiRGBArray(camera, size=(320, 240))
 
+        faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+
         best = 0.
         worst = 1.
+
+        i = 0
 
         times = []
         tick = time.time()
@@ -155,6 +167,23 @@ class PiCam():
 
 
             display = frame.array
+            saveImg = frame.array.copy()
+
+            if i % 10 == 0:
+                face = faceCascade.detectMultiScale(
+                    frame,
+                    scaleFactor=1.1,
+                    minNeighbors=5,
+                    minSize=(self.size)
+                    # flags=cv2.CV_HAAR_SCALE_IMAGE
+                )
+            i += 1
+
+            for (x, y, w, h) in face:
+                if y - 60 > 0 and y + h + 60 < frame.shape[0] and x - 20 > 0 \
+                        and x + w + 20 < frame.shape[1]:
+                    frame = frame[(y - 60):(y + h + 60), (x - 20):(x + w + 20), :]
+                cv2.rectangle(display, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
             img = cv2.resize(display, dsize=self.size)
 
@@ -167,11 +196,11 @@ class PiCam():
             print "accuracy:", acc[0][0]
 
             if acc[0][0] > best:
-                bestImg = display
+                bestImg = saveImg
                 best = acc[0][0]
 
             if acc[0][0] < worst:
-                worstImg = display
+                worstImg = saveImg
                 worst = acc[0][0]
 
             cv2.imshow('yourself', img[0])
@@ -180,8 +209,6 @@ class PiCam():
 
             # clear the stream in preparation for the next frame
             rawCapture.truncate(0)
-
-            end_time = time.time()
 
             times.append(time.time() - tick)
             tick = time.time()
@@ -204,8 +231,9 @@ class PiCam():
         answer = raw_input("do you want to save current image (y/n)?")
 
         if answer == 'y':
-            cv2.imwrite('selfies/selfie.png', bestImg)
+            cv2.imwrite('selfies/bestSelfie.png', bestImg)
+            cv2.imwrite('selfies/worstSelfie.png', worstImg)
 
 
-#camera = PiCam(load_model('model.h5'), (32, 32))
-#camera.show()
+camera = PiCam(load_model('model.h5'), (32, 32))
+camera.show()
