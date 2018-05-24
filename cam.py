@@ -122,8 +122,8 @@ class WebCam():
             cv2.imwrite('selfies/worstSelfie.png', worstImg)
 
 
-camera = WebCam(load_model('simpleModel.h5'), (32, 32))
-camera.show()
+#camera = WebCam(load_model('simpleModel.h5'), (32, 32))
+#camera.show()
 
 
 
