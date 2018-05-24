@@ -9,13 +9,14 @@
 #                                                                                                  #
 ####################################################################################################
 import time
-from picamera.array import PiRGBArray
-from picamera import PiCamera
+#from picamera.array import PiRGBArray
+#from picamera import PiCamera
 
 from keras.models import load_model
 
 from skimage import color
 
+import matplotlib.pylab as plt
 import numpy as np
 import cv2
 
@@ -43,8 +44,12 @@ class WebCam():
         faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 
         cap = cv2.VideoCapture(0)
-        best = 0.
-        worst = 1.
+
+        bestImgs = [None] * 15
+        bestAcc = np.ones((15,)) * 0.
+
+        worstImgs = [None] * 5
+        worstAcc = np.ones((5,)) * 1.
 
         i = 0
 
@@ -59,6 +64,7 @@ class WebCam():
             display = frame.copy()
             saveImg = frame.copy()
 
+            # detect faces
             if i % 10 == 0:
                 face = faceCascade.detectMultiScale(
                     frame,
@@ -84,14 +90,19 @@ class WebCam():
             acc = self.model.predict(img, batch_size=1)
             print "accuracy:", acc[0][0]
 
-            if acc[0][0] > best:
-                bestImg = saveImg
-                best = acc[0][0]
+            # get 5 best and worst images
+            indexBest = bestAcc.argmin()
+            indexWorst = worstAcc.argmax()
 
-            if acc[0][0] < worst:
-                worstImg = saveImg
-                worst = acc[0][0]
+            if acc[0][0] > bestAcc.min():
+                bestAcc[indexBest] = acc[0][0]
+                bestImgs[indexBest] = saveImg
 
+            if acc[0][0] < worstAcc.max():
+                worstAcc[indexWorst] = acc[0][0]
+                worstImgs[indexWorst] = saveImg
+
+            # display stuff
             cv2.imshow('yourself', display)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -104,26 +115,32 @@ class WebCam():
 
         print "average time taken per frame is {} seconds".format(np.mean(times))
 
-        print "\nbest accuracy:", best
-        print "\nworst accuracy:", worst
+        print "\nbest accuracy:", bestAcc
+        print "\nworst accuracy:", worstAcc
 
-        cv2.imshow('best image', bestImg)
-        cv2.waitKey(0)
+        plt.figure()
+        for i in xrange(5):
+            plt.subplot(2, 5, i+1)
+            if bestImgs is not None:
+                plt.imshow(bestImgs[i])
+            plt.title("certainty: %s" %(round(bestAcc[i])))
 
-        cv2.imshow('worst image', worstImg)
-        cv2.waitKey(0)
-
-        cv2.destroyAllWindows()
+        for i in xrange(5):
+            plt.subplot(2, 5, i+6)
+            if worstImgs is not None:
+                plt.imshow(worstImgs[i])
+            plt.title("certainty: %s" %(round(1-worstAcc[i])))
+        plt.show()
 
         answer = raw_input("do you want to save current images (y/n)? ")
 
         if answer == 'y':
-            cv2.imwrite('selfies/bestSelfie.png', bestImg)
-            cv2.imwrite('selfies/worstSelfie.png', worstImg)
+            cv2.imwrite('selfies/bestSelfie.png', bestImgs[0])
+            cv2.imwrite('selfies/worstSelfie.png', worstImgs[0])
 
 
-#camera = WebCam(load_model('simpleModel.h5'), (32, 32))
-#camera.show()
+camera = WebCam(load_model('simpleModel.h5'), (32, 32))
+camera.show()
 
 
 
@@ -165,6 +182,7 @@ class PiCam():
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
+            frame = cv2.flip(frame, 1)
             frame = frame.array
 
             display = frame.copy()
@@ -206,7 +224,6 @@ class PiCam():
                 worst = acc[0][0]
 
             cv2.imshow('yourself', display)
-            cv2.imshow('test', img[0])
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -239,5 +256,5 @@ class PiCam():
             cv2.imwrite('selfies/worstSelfie.png', worstImg)
 
 
-camera = PiCam(load_model('model.h5'), (32, 32))
-camera.show()
+#camera = PiCam(load_model('model.h5'), (32, 32))
+#camera.show()
