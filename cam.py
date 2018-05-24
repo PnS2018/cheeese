@@ -169,7 +169,7 @@ class PiCam():
 
             display = frame.copy()
             saveImg = frame.copy()
-            gray = cv2.cvtColor(frame.array, cv2.COLOR_BGR2GRAY)
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             if i % 10 == 0:
                 face = faceCascade.detectMultiScale(
@@ -187,7 +187,7 @@ class PiCam():
                     frame = frame[(y - 60):(y + h + 60), (x - 20):(x + w + 20), :]
                 cv2.rectangle(display, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-            img = cv2.resize(frame.array, dsize=self.size)
+            img = cv2.resize(frame, dsize=self.size)
 
             img = color.rgb2grey(img)
             img = np.expand_dims(img, axis=0)
