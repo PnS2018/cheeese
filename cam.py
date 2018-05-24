@@ -56,7 +56,7 @@ class WebCam():
 
             frame = cv2.flip(frame, 1)
 
-            display = frame
+            display = frame.copy()
             saveImg = frame.copy()
 
             if i % 10 == 0:
@@ -122,8 +122,8 @@ class WebCam():
             cv2.imwrite('selfies/worstSelfie.png', worstImg)
 
 
-#camera = WebCam(load_model('simpleModel.h5'), (32, 32))
-#camera.show()
+camera = WebCam(load_model('simpleModel.h5'), (32, 32))
+camera.show()
 
 
 
@@ -165,8 +165,7 @@ class PiCam():
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
-
-            display = frame.array
+            display = frame.array.copy()
             saveImg = frame.array.copy()
             gray = cv2.cvtColor(frame.array, cv2.COLOR_BGR2GRAY)
 
@@ -186,7 +185,7 @@ class PiCam():
                     frame = frame[(y - 60):(y + h + 60), (x - 20):(x + w + 20), :]
                 cv2.rectangle(display, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-            img = cv2.resize(display, dsize=self.size)
+            img = cv2.resize(frame, dsize=self.size)
 
             img = color.rgb2grey(img)
             img = np.expand_dims(img, axis=0)
