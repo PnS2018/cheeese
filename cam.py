@@ -165,8 +165,10 @@ class PiCam():
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
-            display = frame.array.copy()
-            saveImg = frame.array.copy()
+            frame = frame.array
+
+            display = frame.copy()
+            saveImg = frame.copy()
             gray = cv2.cvtColor(frame.array, cv2.COLOR_BGR2GRAY)
 
             if i % 10 == 0:
