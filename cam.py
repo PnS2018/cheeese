@@ -45,11 +45,11 @@ class WebCam():
 
         cap = cv2.VideoCapture(0)
 
-        bestImgs = [None] * 15
-        bestAcc = np.ones((15,)) * 0.
+        bestImgs = [None] * 3
+        bestAcc = np.ones((3,)) * 0.
 
-        worstImgs = [None] * 5
-        worstAcc = np.ones((5,)) * 1.
+        worstImgs = [None] * 3
+        worstAcc = np.ones((3,)) * 1.
 
         i = 0
 
@@ -90,7 +90,7 @@ class WebCam():
             acc = self.model.predict(img, batch_size=1)
             print "accuracy:", acc[0][0]
 
-            # get 5 best and worst images
+            # get 3 best and worst images
             indexBest = bestAcc.argmin()
             indexWorst = worstAcc.argmax()
 
@@ -119,17 +119,17 @@ class WebCam():
         print "\nworst accuracy:", worstAcc
 
         plt.figure()
-        for i in xrange(5):
-            plt.subplot(2, 5, i+1)
+        for i in xrange(3):
+            plt.subplot(2, 3, i+1)
             if bestImgs is not None:
                 plt.imshow(bestImgs[i])
-            plt.title("certainty: %s" %(round(bestAcc[i])))
+            plt.title("certainty: %s" %(round(bestAcc[i], 2)))
 
-        for i in xrange(5):
-            plt.subplot(2, 5, i+6)
+        for i in xrange(3):
+            plt.subplot(2, 3, i+4)
             if worstImgs is not None:
                 plt.imshow(worstImgs[i])
-            plt.title("certainty: %s" %(round(1-worstAcc[i])))
+            plt.title("certainty: %s" %(round(1-worstAcc[i], 2)))
         plt.show()
 
         answer = raw_input("do you want to save current images (y/n)? ")
