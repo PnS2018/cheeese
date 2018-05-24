@@ -203,7 +203,9 @@ class PiCam():
                 worstImg = saveImg
                 worst = acc[0][0]
 
-            cv2.imshow('yourself', img[0])
+            cv2.imshow('yourself', display)
+            cv2.imshow('test', img[0])
+
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
