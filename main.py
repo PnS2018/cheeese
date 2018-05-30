@@ -205,6 +205,17 @@ x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 # y = Dense(1, activation='sigmoid')(y)
 
 
+# simple but most "successful" approach #
+#***************************************#
+y = Conv2D(filters=16, kernel_size=(3, 3), activation='relu')(x)
+y = MaxPool2D(pool_size=(3, 3))(y)
+y = Dropout(rate=0.5)(y)
+y = Flatten()(y)
+y = Dense(128, activation='relu')(y)
+y = Dropout(rate=0.5)(y)
+y = Dense(1, activation='sigmoid')(y)
+
+
 # complex approach #
 #******************#
 # y = Conv2D(filters=96, kernel_size=(11, 11), strides=(4, 4), activation='relu')(x)
@@ -236,17 +247,6 @@ x = Input((imgTrainX.shape[1], imgTrainX.shape[2], imgDataSet.shape[3]))
 # y = MaxPool2D(pool_size=(3, 3))(y)
 # y = Flatten()(y)
 # y = Dense(1, activation='sigmoid')(y)
-
-
-# simple but most "successful" approach #
-#***************************************#
-y = Conv2D(filters=16, kernel_size=(3, 3), activation='relu')(x)
-y = MaxPool2D(pool_size=(3, 3))(y)
-y = Dropout(rate=0.5)(y)
-y = Flatten()(y)
-y = Dense(128, activation='relu')(y)
-y = Dropout(rate=0.5)(y)
-y = Dense(1, activation='sigmoid')(y)
 
 
 # face center approach #
