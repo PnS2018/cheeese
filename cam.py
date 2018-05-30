@@ -173,8 +173,11 @@ class PiCam():
 
         faceCascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 
-        best = 0.
-        worst = 1.
+        bestImgs = [None] * 3
+        bestAcc = np.ones((3,)) * 0.
+
+        worstImgs = [None] * 3
+        worstAcc = np.ones((3,)) * 1.
 
         i = 0
 
@@ -217,13 +220,17 @@ class PiCam():
 
             print "accuracy:", acc[0][0]
 
-            if acc[0][0] > best:
-                bestImg = saveImg
-                best = acc[0][0]
+            # get 3 best and worst images
+            indexMin = bestAcc.argmin()
+            indexMax = worstAcc.argmax()
 
-            if acc[0][0] < worst:
-                worstImg = saveImg
-                worst = acc[0][0]
+            if acc[0][0] > bestAcc.min():
+                bestAcc[indexMin] = acc[0][0]
+                bestImgs[indexMin] = saveImg
+
+            if acc[0][0] < worstAcc.max():
+                worstAcc[indexMax] = acc[0][0]
+                worstImgs[indexMax] = saveImg
 
             cv2.imshow('yourself', display)
 
@@ -240,22 +247,30 @@ class PiCam():
 
         print "average time taken per frame is {} seconds".format(np.mean(times))
 
-        print "\nbest accuracy:", best
-        print "\nworst accuracy:", worst
+        print "\nbest accuracy:", bestAcc
+        print "\nworst accuracy:", worstAcc
 
-        cv2.imshow('best image', bestImg)
-        cv2.waitKey(0)
+        plt.figure("test")
+        for i in xrange(3):
+            plt.subplot(2, 3, i + 1)
+            plt.subplots_adjust(left=0.03, bottom=0, right=0.98, top=1, wspace=0.1, hspace=0)
+            if bestImgs is not None:
+                plt.imshow(cv2.cvtColor(bestImgs[i], cv2.COLOR_BGR2RGB))
+            plt.title("GOOD   certainty: %s" % (round(bestAcc[i], 2)))
 
-        cv2.imshow('worst image', worstImg)
-        cv2.waitKey(0)
-
-        cv2.destroyAllWindows()
+        for i in xrange(3):
+            plt.subplot(2, 3, i + 4)
+            plt.subplots_adjust(left=0.03, bottom=0, right=0.98, top=1, wspace=0.1, hspace=0)
+            if worstImgs is not None:
+                plt.imshow(cv2.cvtColor(worstImgs[i], cv2.COLOR_BGR2RGB))
+            plt.title("BAD   certainty: %s" % (round(1 - worstAcc[i], 2)))
+        plt.show()
 
         answer = raw_input("do you want to save current image (y/n)?")
 
         if answer == 'y':
-            cv2.imwrite('selfies/bestSelfie.png', bestImg)
-            cv2.imwrite('selfies/worstSelfie.png', worstImg)
+            cv2.imwrite('selfies/bestSelfie.png', bestImgs[0])
+            cv2.imwrite('selfies/worstSelfie.png', worstImgs[0])
 
 
 #camera = PiCam(load_model('model.h5'), (32, 32))
