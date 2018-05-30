@@ -91,16 +91,16 @@ class WebCam():
             print "accuracy:", acc[0][0]
 
             # get 3 best and worst images
-            indexBest = bestAcc.argmin()
-            indexWorst = worstAcc.argmax()
+            indexMin = bestAcc.argmin()
+            indexMax = worstAcc.argmax()
 
             if acc[0][0] > bestAcc.min():
-                bestAcc[indexBest] = acc[0][0]
-                bestImgs[indexBest] = saveImg
+                bestAcc[indexMin] = acc[0][0]
+                bestImgs[indexMin] = saveImg
 
             if acc[0][0] < worstAcc.max():
-                worstAcc[indexWorst] = acc[0][0]
-                worstImgs[indexWorst] = saveImg
+                worstAcc[indexMax] = acc[0][0]
+                worstImgs[indexMax] = saveImg
 
             # display stuff
             cv2.imshow('yourself', display)
@@ -118,18 +118,20 @@ class WebCam():
         print "\nbest accuracy:", bestAcc
         print "\nworst accuracy:", worstAcc
 
-        plt.figure()
+        plt.figure("test")
         for i in xrange(3):
             plt.subplot(2, 3, i+1)
+            plt.subplots_adjust(left=0.03, bottom=0, right=0.98, top=1, wspace=0.1, hspace=0)
             if bestImgs is not None:
-                plt.imshow(bestImgs[i])
-            plt.title("certainty: %s" %(round(bestAcc[i], 2)))
+                plt.imshow(cv2.cvtColor(bestImgs[i], cv2.COLOR_BGR2RGB))
+            plt.title("GOOD   certainty: %s" %(round(bestAcc[i], 2)))
 
         for i in xrange(3):
             plt.subplot(2, 3, i+4)
+            plt.subplots_adjust(left=0.03, bottom=0, right=0.98, top=1, wspace=0.1, hspace=0)
             if worstImgs is not None:
-                plt.imshow(worstImgs[i])
-            plt.title("certainty: %s" %(round(1-worstAcc[i], 2)))
+                plt.imshow(cv2.cvtColor(worstImgs[i], cv2.COLOR_BGR2RGB))
+            plt.title("BAD   certainty: %s" %(round(1 - worstAcc[i], 2)))
         plt.show()
 
         answer = raw_input("do you want to save current images (y/n)? ")
