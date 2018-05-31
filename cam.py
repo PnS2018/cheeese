@@ -9,8 +9,8 @@
 #                                                                                                  #
 ####################################################################################################
 import time
-#from picamera.array import PiRGBArray
-#from picamera import PiCamera
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
 from keras.models import load_model
 
@@ -141,8 +141,8 @@ class WebCam():
             cv2.imwrite('selfies/worstSelfie.png', worstImgs[0])
 
 
-camera = WebCam(load_model('simpleModel.h5'), (32, 32))
-camera.show()
+#camera = WebCam(load_model('simpleModel.h5'), (32, 32))
+#camera.show()
 
 
 
@@ -273,5 +273,5 @@ class PiCam():
             cv2.imwrite('selfies/worstSelfie.png', worstImgs[0])
 
 
-#camera = PiCam(load_model('model.h5'), (32, 32))
-#camera.show()
+camera = PiCam(load_model('model.h5'), (32, 32))
+camera.show()
