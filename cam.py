@@ -187,8 +187,8 @@ class PiCam():
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 
-            frame = cv2.flip(frame, 1)
             frame = frame.array
+            frame = cv2.flip(frame, 1)
 
             display = frame.copy()
             saveImg = frame.copy()
@@ -273,5 +273,5 @@ class PiCam():
             cv2.imwrite('selfies/worstSelfie.png', worstImgs[0])
 
 
-camera = PiCam(load_model('model.h5'), (32, 32))
+camera = PiCam(load_model('simpleModel.h5'), (32, 32))
 camera.show()
